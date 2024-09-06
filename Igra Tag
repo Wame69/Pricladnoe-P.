@@ -2,7 +2,7 @@ using System;
 
 namespace Igra
 {
-    class Program
+    class PuzzleGame
     {
         static int[,] board = new int[4, 4];
         static int cell0 = 3;
@@ -10,10 +10,10 @@ namespace Igra
 
         static void Main(string[] args)
         {
-            Game();
+            Puzzlegame();
         }
 
-        static void Game()
+        static void Puzzlegame()
         {
             Initia();
             Display();
