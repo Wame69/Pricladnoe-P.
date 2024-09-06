@@ -4,9 +4,10 @@ namespace Igra
 {
     class Program
     {
-        static int[,] board = new int[3, 3];
-        static int cell0 = 2;
-        static int cont = 2;
+        static int[,] board = new int[4, 4];
+        static int cell0 = 3;
+        static int cont = 3; 
+
         static void Main(string[] args)
         {
             Game();
@@ -24,22 +25,21 @@ namespace Igra
                 if (move == 'Q')
                 {
                     Console.WriteLine("Выход");
-                    return; 
+                    return;
                 }
                 if (MoveTile(move))
                 {
-                    Display(); 
+                    Display();
                 }
             }
             Console.WriteLine("Выйгрыш есть можно и поесть");
         }
-
-        static void Initia() 
+        static void Initia()
         {
             int num = 1;
-            for (int row = 0; row < 3; row++)
+            for (int row = 0; row < 4; row++)
             {
-                for (int col = 0; col < 3; col++)
+                for (int col = 0; col < 4; col++)
                 {
                     board[row, col] = num++;
                 }
@@ -57,10 +57,8 @@ namespace Igra
                 MoveTile(move);
             }
         }
-
         static char Get(Random rnd)
         {
-
             int moveIndex = rnd.Next(4); 
             switch (moveIndex)
             {
@@ -74,9 +72,8 @@ namespace Igra
 
         static bool MoveTile(char move)
         {
-            int tileRow = cell0;
+            int tileRow = cell0; 
             int tileCol = cont;
-
             switch (move)
             {
                 case 'W':
@@ -92,26 +89,26 @@ namespace Igra
                     tileCol = cont + 1;
                     break;
                 default:
-                    return false; 
+                    return false;
             }
-            if (tileRow >= 0 && tileRow < 3 && tileCol >= 0 && tileCol < 3)
+            if (tileRow >= 0 && tileRow < 4 && tileCol >= 0 && tileCol < 4)
             {
                 board[cell0, cont] = board[tileRow, tileCol];
                 board[tileRow, tileCol] = 0;
                 cell0 = tileRow;
                 cont = tileCol;
 
-                return true; 
+                return true;
             }
-            return false; 
+            return false;
         }
 
         static void Display()
         {
-            Console.Clear(); 
-            for (int row = 0; row < 3; row++)
+            Console.Clear();
+            for (int row = 0; row < 4; row++)
             {
-                for (int col = 0; col < 3; col++)
+                for (int col = 0; col < 4; col++)
                 {
                     if (board[row, col] == 0)
                     {
@@ -119,7 +116,7 @@ namespace Igra
                     }
                     else
                     {
-                        Console.Write(" {0:d2} ", board[row, col]); 
+                        Console.Write(" {0:d2} ", board[row, col]);
                     }
                 }
                 Console.WriteLine();
@@ -129,11 +126,11 @@ namespace Igra
         static bool IsSolved()
         {
             int num = 1;
-            for (int row = 0; row < 3; row++)
+            for (int row = 0; row < 4; row++)
             {
-                for (int col = 0; col < 3; col++)
+                for (int col = 0; col < 4; col++)
                 {
-                    if (row == 2 && col == 2)
+                    if (row == 3 && col == 3)
                     {
                         if (board[row, col] != 0)
                         {
