@@ -1,0 +1,157 @@
+using System;
+
+namespace Igra
+{
+    class Program
+    {
+        static int[,] board = new int[3, 3];
+        static int cell0 = 2;
+        static int cont = 2;
+        static void Main(string[] args)
+        {
+            Game();
+        }
+
+        static void Game()
+        {
+            Initia();
+            Display();
+            while (!IsSolved())
+            {
+                Console.Write("\nВведите команду (W - вверх, A - влево, S - вниз, D - вправо, Q - выход): ");
+                char move = Console.ReadKey().KeyChar;
+                Console.WriteLine();
+                if (move == 'Q')
+                {
+                    Console.WriteLine("Выход");
+                    return; 
+                }
+                if (MoveTile(move))
+                {
+                    Display(); 
+                }
+            }
+            Console.WriteLine("Выйгрыш есть можно и поесть");
+        }
+
+        static void Initia() 
+        {
+            int num = 1;
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    board[row, col] = num++;
+                }
+            }
+            board[cell0, cont] = 0;
+            Shuffle();
+        }
+
+        static void Shuffle()
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < 100; i++)
+            {
+                char move = Get(rnd);
+                MoveTile(move);
+            }
+        }
+
+        static char Get(Random rnd)
+        {
+
+            int moveIndex = rnd.Next(4); 
+            switch (moveIndex)
+            {
+                case 0: return 'W';
+                case 1: return 'A';
+                case 2: return 'S';
+                case 3: return 'D';
+                default: return ' '; 
+            }
+        }
+
+        static bool MoveTile(char move)
+        {
+            int tileRow = cell0;
+            int tileCol = cont;
+
+            switch (move)
+            {
+                case 'W':
+                    tileRow = cell0 - 1;
+                    break;
+                case 'A':
+                    tileCol = cont - 1;
+                    break;
+                case 'S':
+                    tileRow = cell0 + 1;
+                    break;
+                case 'D':
+                    tileCol = cont + 1;
+                    break;
+                default:
+                    return false; 
+            }
+            if (tileRow >= 0 && tileRow < 3 && tileCol >= 0 && tileCol < 3)
+            {
+                board[cell0, cont] = board[tileRow, tileCol];
+                board[tileRow, tileCol] = 0;
+                cell0 = tileRow;
+                cont = tileCol;
+
+                return true; 
+            }
+            return false; 
+        }
+
+        static void Display()
+        {
+            Console.Clear(); 
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    if (board[row, col] == 0)
+                    {
+                        Console.Write("  _  "); 
+                    }
+                    else
+                    {
+                        Console.Write(" {0:d2} ", board[row, col]); 
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+        static bool IsSolved()
+        {
+            int num = 1;
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    if (row == 2 && col == 2)
+                    {
+                        if (board[row, col] != 0)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (board[row, col] != num)
+                        {
+                            return false;
+                        }
+                    }
+                    num++;
+                }
+            }
+
+            return true;
+        }
+    }
+}
