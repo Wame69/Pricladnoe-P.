@@ -11,7 +11,7 @@ namespace MuCalcLibTests
             int expected = 30;
 
             //act
-            MyCalc c = new MyCalc(); // Создаем экземпляр класса MyCalc
+            MyCalc c = new MyCalc();
             int actual = c.Sum(x, y);
 
             //assert
