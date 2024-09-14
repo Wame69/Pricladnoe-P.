@@ -1,32 +1,3 @@
-///*List<string> names = new List<string> { "Анна", "Jonathan", "Canada", "Andrew", "Banana", "Alan", "Максим", "Тимур", "Роман", "Никита" };
-//Console.WriteLine("Имеющиеся имена: ");
-//foreach (string name in names)
-//{
-//    Console.WriteLine(name);
-//}
-//static List<string> SearchStrings(List<string> list, string search)
-//{
-//    return list.Where(s => s.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-//}
-//while (true)
-//{
-//    Console.WriteLine("Введите строку для поиска (или 'exit' для завершения):");
-//    string input = Console.ReadLine();
-//    if (input.ToLower() == "exit") break;
-//    List<string> results = SearchStrings(names, input);
-//    if (results.Count > 0)
-//    {
-//        Console.WriteLine("Найдены строки:");
-//        foreach (var result in results)
-//        {
-//            Console.WriteLine(result);
-//        }
-//    }
-//    else
-//    {
-//        Console.WriteLine("Совпадений не найдено.");
-//    }
-//}   */
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
