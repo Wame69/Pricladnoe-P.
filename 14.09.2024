@@ -1,0 +1,113 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        const int size = 5;
+        int[,] puzzle = new int[size, size]
+        {
+            { 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 1, 1 },
+            { 0, 0, 0, 1, 0 },
+            { 1, 1, 1, 1, 0 },
+            { 0, 0, 0, 0, 0 }
+        };
+
+        int[,] solution = new int[size, size]
+        {
+            { 0, 0, 0, 0, 0 },
+            { 0, 0, 0, 1, 1 },
+            { 0, 0, 0, 1, 0 },
+            { 1, 1, 1, 1, 0 },
+            { 0, 0, 0, 0, 0 }
+        };
+
+        int lives = 3;
+        PlayGame(puzzle, solution, lives);
+    }
+
+    static void PlayGame(int[,] puzzle, int[,] solution, int lives)
+    {
+        int size = puzzle.GetLength(0);
+        int[,] playerGrid = new int[size, size];
+
+        while (true)
+        {
+            PrintGrid(playerGrid);
+            Console.WriteLine($"У вас {lives} жизней. Введите координаты (строка и столбец) для закрашивания (например, 1 2):");
+            string input = Console.ReadLine();
+            var coordinates = input.Split(' ');
+
+            if (coordinates.Length != 2 ||
+                !int.TryParse(coordinates[0], out int row) ||
+                !int.TryParse(coordinates[1], out int col) ||
+                row < 0 || row >= size ||
+                col < 0 || col >= size)
+            {
+                Console.WriteLine("Некорректный ввод. Попробуйте снова.");
+                continue;
+            }
+
+            if (playerGrid[row, col] != solution[row, col])
+            {
+                playerGrid[row, col] = 1;
+            }
+            else
+            {
+                playerGrid[row, col] = 0;
+                lives--;
+            }
+
+            if (lives == 0)
+            {
+                Console.WriteLine("У вас закончились жизни. Вы проиграли.");
+                break;
+            }
+
+            if (CheckWin(playerGrid, solution))
+            {
+                Console.WriteLine("Поздравляем! Вы выиграли!");
+                PrintGrid(playerGrid);
+                break;
+            }
+        }
+    }
+
+    static void PrintGrid(int[,] grid)
+    {
+        int size = grid.GetLength(0);
+
+        Console.Write("   ");
+        for (int j = 0; j < size; j++)
+        {
+            Console.Write($"{j} ");
+        }
+        Console.WriteLine();
+
+        for (int i = 0; i < size; i++)
+        {
+            Console.Write($" {i} ");
+            for (int j = 0; j < size; j++)
+            {
+                Console.Write(grid[i, j] == 1 ? "X " : ". ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static bool CheckWin(int[,] playerGrid, int[,] solution)
+    {
+        for (int i = 0; i < playerGrid.GetLength(0); i++)
+        {
+            for (int j = 0; j < playerGrid.GetLength(1); j++)
+            {
+                if (playerGrid[i, j] != solution[i, j])
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
