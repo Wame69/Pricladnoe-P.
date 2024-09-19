@@ -1,0 +1,134 @@
+using System;
+using FFmpeg.AutoGen;
+
+namespace AsciiVideoPlayer
+{
+    class Program
+    {
+        private static readonly char[] asciiChars = new char[] { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
+
+        static unsafe void Main(string[] args)
+        {
+            if (args.Length < 1)
+            {
+                Console.WriteLine("Использование: AsciiVideoPlayer <путь_к_видео>");
+                return;
+            }
+
+            string videoPath = args[0];
+
+            // ffmpeg.avformat_network_init();
+
+         
+            AVFormatContext* formatCtx = null;
+
+            if (ffmpeg.avformat_open_input(&formatCtx, videoPath, null, null) != 0)
+            {
+                Console.WriteLine("Ошибка открытия файла");
+                return;
+            }
+
+            if (ffmpeg.avformat_find_stream_info(formatCtx, null) < 0)
+            {
+                Console.WriteLine("Ошибка получения информации о потоке");
+                return;
+            }
+
+            int videoStreamIndex = -1;
+            for (int i = 0; i < formatCtx->nb_streams; i++)
+            {
+                if (formatCtx->streams[i]->codecpar->codec_type == AVMediaType.AVMEDIA_TYPE_VIDEO)
+                {
+                    videoStreamIndex = i;
+                    break;
+                }
+            }
+
+            if (videoStreamIndex == -1)
+            {
+                Console.WriteLine("Видеопоток не найден");
+                return;
+            }
+
+            var codecParams = formatCtx->streams[videoStreamIndex]->codecpar;
+            var codec = ffmpeg.avcodec_find_decoder(codecParams->codec_id);
+            if (codec == null)
+            {
+                Console.WriteLine("Не удалось найти декодер");
+                return;
+            }
+
+            var codecCtx = ffmpeg.avcodec_alloc_context3(codec);
+            if (ffmpeg.avcodec_parameters_to_context(codecCtx, codecParams) < 0)
+            {
+                Console.WriteLine("Ошибка инициализации контекста кодека");
+                return;
+            }
+
+            if (ffmpeg.avcodec_open2(codecCtx, codec, null) < 0)
+            {
+                Console.WriteLine("Ошибка открытия кодека");
+                return;
+            }
+
+            var packet = ffmpeg.av_packet_alloc();
+            var frame = ffmpeg.av_frame_alloc();
+
+            while (ffmpeg.av_read_frame(formatCtx, packet) >= 0)
+            {
+                if (packet->stream_index == videoStreamIndex)
+                {
+                    int response = ffmpeg.avcodec_send_packet(codecCtx, packet);
+                    if (response < 0)
+                    {
+                        Console.WriteLine("Ошибка при отправке пакета");
+                        continue;
+                    }
+
+                    while (response >= 0)
+                    {
+                        response = ffmpeg.avcodec_receive_frame(codecCtx, frame);
+                        if (response == ffmpeg.AVERROR(ffmpeg.EAGAIN) || response == ffmpeg.AVERROR_EOF)
+                            break;
+                        else if (response < 0)
+                        {
+                            Console.WriteLine("Ошибка при получении кадра");
+                            break;
+                        }
+
+                        PrintFrameAsAscii(frame);
+                    }
+                }
+
+                ffmpeg.av_packet_unref(packet);
+            }
+
+            ffmpeg.av_frame_free(&frame);
+            ffmpeg.av_packet_free(&packet);
+            ffmpeg.avcodec_free_context(&codecCtx);
+            ffmpeg.avformat_close_input(&formatCtx);
+
+    
+            // ffmpeg.avformat_network_deinit();
+        }
+
+        private static unsafe void PrintFrameAsAscii(AVFrame* frame)
+        {
+            int width = frame->width;
+            int height = frame->height;
+
+
+            for (int y = 0; y < height; y += 2)  
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    byte yValue = frame->data[0][y * frame->linesize[0] + x];
+                    char asciiChar = asciiChars[yValue * (asciiChars.Length - 1) / 255];
+                    Console.Write(asciiChar);
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine(new string('-', 80));
+        }
+    }
+}
